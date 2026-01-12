@@ -2,6 +2,8 @@
 
 A simple Obsidian plugin that displays a 52-week heatmap calendar. Click on any week to open (or create) a corresponding weekly note.
 
+![Weekly Heatmap Preview](screenshots/preview.png)
+
 ## Features
 
 - 📅 **52-Week Heatmap View** - Visual overview of your entire year
@@ -62,3 +64,7 @@ If you find this plugin helpful, please consider:
 - ⭐ Starring the repository
 - 🐛 Reporting bugs or requesting features via [Issues](https://github.com/aj-abhinai/weekly-heatmap/issues)
 - 🤝 Contributing via pull requests
+
+---
+
+<a href="https://buymeacoffee.com/aj_abhinai" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>

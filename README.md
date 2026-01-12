@@ -9,23 +9,35 @@ A simple Obsidian plugin that displays a 52-week heatmap calendar. Click on any 
 - 📅 **52-Week Heatmap View** - Visual overview of your entire year
 - 🎨 **Visual Distinction** - Past/current weeks are highlighted differently from future weeks
 - 📝 **Quick Weekly Notes** - Click any week to open or create a weekly note
-- 🏷️ **Smart Naming** - Notes are automatically titled with format: `Week [number]: [Monday] - [Sunday]`
+- 🏷️ **Smart Naming** - Notes are automatically titled with format: `Week [number]: [Start] - [End]`
+- ⚙️ **Customizable Settings** - Configure folder path, note template, and week start day
+
+## Settings
+
+Access settings via **Settings → Community Plugins → Weekly Heatmap**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| **Weekly Notes Folder** | Folder where notes are created | `Weekly Notes` |
+| **Week Start Day** | Monday or Sunday | Monday |
+| **Note Template** | Custom markdown template for new notes | Tasks & Notes sections |
 
 ## Installation
 
-### From Obsidian Community Plugins (Recommended)
-1. Open Obsidian Settings
-2. Go to **Community Plugins** and disable **Safe Mode**
-3. Click **Browse** and search for "Weekly Heatmap"
-4. Click **Install**, then **Enable**
+### Option 1: Download from Releases (Recommended)
 
-### Manual Installation
 1. Download the latest release from the [Releases page](https://github.com/aj-abhinai/weekly-heatmap/releases)
-2. Extract the files into your vault's plugins folder: `<vault>/.obsidian/plugins/weekly-heatmap/`
-3. Reload Obsidian
-4. Enable the plugin in Settings → Community Plugins
+2. Extract the downloaded files
+3. Copy the files into your vault's plugins folder: `<vault>/.obsidian/plugins/weekly-heatmap/`
+4. Make sure these files are in the folder:
+   - `main.js`
+   - `manifest.json`
+   - `styles.css`
+5. Reload Obsidian
+6. Enable the plugin in **Settings → Community Plugins**
 
-### For Developers
+### Option 2: Manual Installation (For Developers)
+
 1. Clone this repository into your vault's plugins folder:
    ```bash
    cd <vault>/.obsidian/plugins/
@@ -40,7 +52,7 @@ A simple Obsidian plugin that displays a 52-week heatmap calendar. Click on any 
    ```bash
    npm run build
    ```
-4. Reload Obsidian and enable the plugin in Settings → Community Plugins
+4. Reload Obsidian and enable the plugin in **Settings → Community Plugins**
 
 ## Usage
 

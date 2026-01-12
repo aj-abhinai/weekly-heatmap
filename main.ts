@@ -1,9 +1,26 @@
-import { Plugin, WorkspaceLeaf, ItemView, TFile, Notice } from 'obsidian';
+import { Plugin, WorkspaceLeaf, ItemView, TFile, Notice, PluginSettingTab, App, Setting } from 'obsidian';
 
 const VIEW_TYPE_WEEKLY_HEATMAP = 'weekly-heatmap-view';
 
+// Settings interface
+interface WeeklyHeatmapSettings {
+  folderPath: string;
+  noteTemplate: string;
+  weekStartDay: number; // 0 = Sunday, 1 = Monday
+}
+
+const DEFAULT_SETTINGS: WeeklyHeatmapSettings = {
+  folderPath: 'Weekly Notes',
+  noteTemplate: '## Tasks\n\n- [ ] \n\n## Notes\n\n',
+  weekStartDay: 1, // Monday
+};
+
 export default class WeeklyHeatmapPlugin extends Plugin {
+  settings: WeeklyHeatmapSettings;
+
   async onload() {
+    await this.loadSettings();
+
     this.registerView(
       VIEW_TYPE_WEEKLY_HEATMAP,
       (leaf: WorkspaceLeaf) => new WeeklyHeatmapView(leaf, this)
@@ -19,6 +36,24 @@ export default class WeeklyHeatmapPlugin extends Plugin {
       callback: () => {
         this.activateView();
       },
+    });
+
+    // Add settings tab
+    this.addSettingTab(new WeeklyHeatmapSettingTab(this.app, this));
+  }
+
+  async loadSettings() {
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+  }
+
+  async saveSettings() {
+    await this.saveData(this.settings);
+    // Refresh the view when settings change
+    const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_WEEKLY_HEATMAP);
+    leaves.forEach(leaf => {
+      if (leaf.view instanceof WeeklyHeatmapView) {
+        leaf.view.render();
+      }
     });
   }
 
@@ -42,7 +77,65 @@ export default class WeeklyHeatmapPlugin extends Plugin {
     }
   }
 
-  onunload() {}
+  onunload() { }
+}
+
+// Settings Tab
+class WeeklyHeatmapSettingTab extends PluginSettingTab {
+  plugin: WeeklyHeatmapPlugin;
+
+  constructor(app: App, plugin: WeeklyHeatmapPlugin) {
+    super(app, plugin);
+    this.plugin = plugin;
+  }
+
+  display(): void {
+    const { containerEl } = this;
+    containerEl.empty();
+
+    containerEl.createEl('h2', { text: 'Weekly Heatmap Settings' });
+
+    // Folder Path Setting
+    new Setting(containerEl)
+      .setName('Weekly Notes Folder')
+      .setDesc('The folder where weekly notes will be created')
+      .addText(text => text
+        .setPlaceholder('Weekly Notes')
+        .setValue(this.plugin.settings.folderPath)
+        .onChange(async (value) => {
+          this.plugin.settings.folderPath = value || 'Weekly Notes';
+          await this.plugin.saveSettings();
+        }));
+
+    // Week Start Day Setting
+    new Setting(containerEl)
+      .setName('Week Start Day')
+      .setDesc('Choose which day your week starts on')
+      .addDropdown(dropdown => dropdown
+        .addOption('1', 'Monday')
+        .addOption('0', 'Sunday')
+        .setValue(String(this.plugin.settings.weekStartDay))
+        .onChange(async (value) => {
+          this.plugin.settings.weekStartDay = parseInt(value);
+          await this.plugin.saveSettings();
+        }));
+
+    // Note Template Setting
+    new Setting(containerEl)
+      .setName('Note Template')
+      .setDesc('Template for new weekly notes. Use markdown formatting.')
+      .addTextArea(text => {
+        text
+          .setPlaceholder('## Tasks\n\n- [ ] \n\n## Notes\n\n')
+          .setValue(this.plugin.settings.noteTemplate)
+          .onChange(async (value) => {
+            this.plugin.settings.noteTemplate = value || DEFAULT_SETTINGS.noteTemplate;
+            await this.plugin.saveSettings();
+          });
+        text.inputEl.rows = 8;
+        text.inputEl.cols = 40;
+      });
+  }
 }
 
 class WeeklyHeatmapView extends ItemView {
@@ -58,7 +151,7 @@ class WeeklyHeatmapView extends ItemView {
   getIcon() { return 'calendar-glyph'; }
 
   async onOpen() { this.render(); }
-  async onClose() {}
+  async onClose() { }
 
   getWeekNumber(date: Date): number {
     const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -68,11 +161,19 @@ class WeeklyHeatmapView extends ItemView {
     return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
   }
 
-  getMonday(year: number, week: number): Date {
+  getWeekStart(year: number, week: number): Date {
     const jan1 = new Date(year, 0, 1);
     const days = (week - 1) * 7;
     const dayOfWeek = jan1.getDay();
-    const diff = dayOfWeek <= 4 ? 1 - dayOfWeek : 8 - dayOfWeek;
+    const startDay = this.plugin.settings.weekStartDay;
+
+    let diff: number;
+    if (startDay === 1) { // Monday
+      diff = dayOfWeek <= 4 ? 1 - dayOfWeek : 8 - dayOfWeek;
+    } else { // Sunday
+      diff = -dayOfWeek;
+    }
+
     return new Date(year, 0, 1 + diff + days);
   }
 
@@ -99,9 +200,9 @@ class WeeklyHeatmapView extends ItemView {
     for (let week = 1; week <= 52; week++) {
       const weekCell = grid.createDiv({ cls: 'week-cell' });
 
-      const monday = this.getMonday(currentYear, week);
-      const sunday = new Date(monday);
-      sunday.setDate(monday.getDate() + 6);
+      const weekStart = this.getWeekStart(currentYear, week);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6);
 
       if (week < currentWeek) {
         weekCell.addClass('week-past');
@@ -112,14 +213,14 @@ class WeeklyHeatmapView extends ItemView {
       }
 
       // Show week info on hover using title attribute (native browser tooltip)
-      weekCell.setAttribute('title', `Week ${week}: ${this.formatDate(monday)} - ${this.formatDate(sunday)}`);
+      weekCell.setAttribute('title', `Week ${week}: ${this.formatDate(weekStart)} - ${this.formatDate(weekEnd)}`);
 
       weekCell.addEventListener('click', () => {
         if (week > currentWeek + 1) {
           new Notice('✨ Focus on the present week first!', 2000);
           return;
         }
-        this.openWeeklyNote(week, monday, sunday, currentYear);
+        this.openWeeklyNote(week, weekStart, weekEnd, currentYear);
       });
     }
 
@@ -132,9 +233,9 @@ class WeeklyHeatmapView extends ItemView {
     `;
   }
 
-  async openWeeklyNote(weekNum: number, monday: Date, sunday: Date, year: number) {
-    const folderPath = 'Weekly Notes';
-    const fileName = `Week ${weekNum} - ${this.formatDate(monday)} to ${this.formatDate(sunday)}, ${year}`;
+  async openWeeklyNote(weekNum: number, weekStart: Date, weekEnd: Date, year: number) {
+    const folderPath = this.plugin.settings.folderPath;
+    const fileName = `Week ${weekNum} - ${this.formatDate(weekStart)} to ${this.formatDate(weekEnd)}, ${year}`;
     const filePath = `${folderPath}/${fileName}.md`;
 
     const folder = this.app.vault.getAbstractFileByPath(folderPath);
@@ -145,7 +246,7 @@ class WeeklyHeatmapView extends ItemView {
     let file = this.app.vault.getAbstractFileByPath(filePath);
 
     if (!file) {
-      const content = `## Tasks\n\n- [ ] \n\n## Notes\n\n`;
+      const content = this.plugin.settings.noteTemplate;
       file = await this.app.vault.create(filePath, content);
     }
 

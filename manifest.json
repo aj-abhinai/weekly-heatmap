@@ -1,7 +1,7 @@
 {
   "id": "weekly-heatmap",
   "name": "Weekly Heatmap",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "minAppVersion": "0.15.0",
   "description": "Displays 52 weeks of the year as a heatmap grid. Click to open weekly notes.",
   "author": "aj-abhinai",

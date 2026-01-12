@@ -1,0 +1,31 @@
+{
+  "name": "weekly-heatmap",
+  "version": "1.0.0",
+  "description": "Weekly heatmap plugin for Obsidian",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs"
+  },
+  "keywords": [
+    "obsidian",
+    "plugin",
+    "heatmap",
+    "weekly",
+    "calendar",
+    "notes"
+  ],
+  "author": "aj-abhinai",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aj-abhinai/weekly-heatmap.git"
+  },
+  "devDependencies": {
+    "builtin-modules": "^3.3.0",
+    "esbuild": "^0.27.2",
+    "obsidian": "latest",
+    "tslib": "^2.8.1",
+    "typescript": "^5.0.0"
+  }
+}

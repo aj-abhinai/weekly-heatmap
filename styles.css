@@ -1,0 +1,85 @@
+.weekly-heatmap-container {
+    padding: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.heatmap-header {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.weekly-heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20px, 1fr));
+    gap: 5px;
+    width: 100%;
+}
+
+.week-cell {
+    aspect-ratio: 1;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.week-cell:hover {
+    transform: scale(1.15);
+}
+
+/* Past weeks - solid purple */
+.week-past {
+    background-color: #9333ea;
+}
+
+/* Current week - brighter purple with glow */
+.week-current {
+    background-color: #a855f7;
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.5);
+}
+
+/* Future weeks - very light purple */
+.week-future {
+    background-color: #ede9fe;
+}
+
+.week-future:hover {
+    background-color: #ddd6fe;
+}
+
+/* Legend */
+.heatmap-legend {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 16px;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+.legend-dot.past {
+    background-color: #9333ea;
+}
+
+.legend-dot.current {
+    background-color: #a855f7;
+}
+
+.legend-dot.future {
+    background-color: #ede9fe;
+}

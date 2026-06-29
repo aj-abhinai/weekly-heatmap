@@ -14,8 +14,6 @@ A simple Obsidian plugin that displays a 52-week heatmap calendar. Click on any 
 
 ## Settings
 
-Access settings via **Settings → Community Plugins → Weekly Heatmap**
-
 | Setting | Description | Default |
 |---------|-------------|---------|
 | **Weekly Notes Folder** | Folder where notes are created | `Weekly Notes` |

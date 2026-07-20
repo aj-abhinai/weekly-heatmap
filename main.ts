@@ -16,7 +16,7 @@ const DEFAULT_SETTINGS: WeeklyHeatmapSettings = {
 };
 
 export default class WeeklyHeatmapPlugin extends Plugin {
-  settings: WeeklyHeatmapSettings;
+  settings: WeeklyHeatmapSettings = DEFAULT_SETTINGS;
 
   async onload() {
     await this.loadSettings();

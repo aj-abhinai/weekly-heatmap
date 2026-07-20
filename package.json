@@ -22,10 +22,10 @@
     "url": "https://github.com/aj-abhinai/weekly-heatmap.git"
   },
   "devDependencies": {
-    "builtin-modules": "^5.0.0",
-    "esbuild": "^0.27.2",
-    "obsidian": "latest",
+    "builtin-modules": "^5.3.0",
+    "esbuild": "^0.28.1",
+    "obsidian": "^1.13.1",
     "tslib": "^2.8.1",
-    "typescript": "^5.9.3"
+    "typescript": "^7.0.2"
   }
 }
